@@ -18,7 +18,9 @@ public class AWS {
 
     // Create an HTTP connection
     KinesisAsyncClient client = KinesisAsyncClient.builder()
+//            .httpClientBuilder(NettyNioAsyncHttpClient.builder()
+//                                       .maxConcurrency(100)
+//                                       .maxPendingConnectionAcquires(10_000))
             .build();
-
 }
 
