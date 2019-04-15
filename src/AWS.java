@@ -3,24 +3,31 @@
  * Created: 04/11/2019
  */
 
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.ec2.Ec2Client;
-import software.amazon.awssdk.services.kinesis.KinesisAsyncClient;
+
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 
 public class AWS {
 
-    // Select a region and create a client
-    Ec2Client ec2 = Ec2Client.builder()
-            .region(Region.US_EAST_1)
-            //.endpointOverride(URI.create("https://ec2.us-west-1.amazonaws.com"))
-            .build();
+    // Set default credentials
+    DefaultAWSCredentialsProviderChain chain = new DefaultAWSCredentialsProviderChain();
+    AWSCredentials cred = chain.getCredentials();
 
+    // Set region
+    Regions region = Regions.US_EAST_1;
+    //ProfileCredentialsProvider credentialsProvider = new ProfileCredentialsProvider("myProfile");
 
-    // Create an HTTP connection
-    KinesisAsyncClient client = KinesisAsyncClient.builder()
-//            .httpClientBuilder(NettyNioAsyncHttpClient.builder()
-//                                       .maxConcurrency(100)
-//                                       .maxPendingConnectionAcquires(10_000))
-            .build();
+    // Create Amazon DynamoDB client builder
+    AmazonDynamoDBClientBuilder builder = AmazonDynamoDBClientBuilder.standard();
+
+    AmazonDynamoDB dynamoDB =
+            dynamoDB = AmazonDynamoDBClientBuilder.standard()
+                    .withRegion(region)
+                    .withCredentials(chain)
+                    .build();
+
 }
 
