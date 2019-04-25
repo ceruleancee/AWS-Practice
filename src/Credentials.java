@@ -5,6 +5,7 @@
 
 
 public class Credentials {
-    public static final String accessKeyId ="Keeeey";
-    public static final String secretAccessKey = "Keeeey";
+    public static final String accessKey ="Keeeey";
+    public static final String secretKey = "Keeeey";
+
 }
