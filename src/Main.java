@@ -1,6 +1,10 @@
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+/*
+ * Author: CeruleanCee
+ * Created: 04/26/2019
+ */
+
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsRequest;
@@ -11,31 +15,34 @@ public class Main {
 
         String logGroupName = "graylogs";
         String logStreamName = "graylog";
-        String awsUser = "cee";
 
+        // CONFIGURATION
         // Set credentials
-        BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(Credentials.accessKey, Credentials.secretKey);
-        DefaultAWSCredentialsProviderChain awsCredentialsProviderChain = DefaultAWSCredentialsProviderChain.getInstance();
-        AWSStaticCredentialsProvider awsStaticCredentialsProvider;
+        AwsBasicCredentials basicCredentials = AwsBasicCredentials.create(UserCredentials.accessKey, UserCredentials.secretKey);
 
         // Set Region
         Region region = Region.US_EAST_1;
 
+
+        // CLOUDWATCH
         // Create a CloudwatchLog client
         CloudWatchLogsClient logsClient = CloudWatchLogsClient.builder()
-                // TODO resolve credentialProvider value with static values
-                //.credentialsProvider()
+                .credentialsProvider(StaticCredentialsProvider.create(basicCredentials))
                 .region(region)
                 .build();
 
+        // Pull log from the beginning from the designated logGroup and logStream
         logsClient.getLogEvents(GetLogEventsRequest.builder()
                                         .logGroupName(logGroupName)
                                         .logStreamName(logStreamName)
+                                        .startFromHead(true)
                                         .build());
 
-        System.out.println(logsClient);
-
-        //AmazonCloudWatchClientBuilder.defaultClient().listMetrics();
+        // Print the log
+        System.out.println(logsClient.getLogEvents(GetLogEventsRequest.builder()
+                                                           .logGroupName(logGroupName)
+                                                           .logStreamName(logStreamName)
+                                                           .build()));
 
     }
 }
