@@ -4,21 +4,17 @@
  */
 
 
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
-import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.regions.Region;
 
 public class AWSConfigSettings {
 
-    // Set default credentials
-    BasicAWSCredentials awsCredentials = new BasicAWSCredentials(Credentials.accessKey, Credentials.secretKey);
+    // CONFIGURATION
+    // Set credentials
+    AwsBasicCredentials basicCredentials = AwsBasicCredentials.create(UserCredentials.accessKey, UserCredentials.secretKey);
 
-    // Set region
-    Regions region = Regions.US_EAST_1;
-
-    // IAM role
-    AmazonIdentityManagement iam = AmazonIdentityManagementClientBuilder.defaultClient();
+    // Set Region
+    Region region = Region.US_EAST_1;
 
 
 }
