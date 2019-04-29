@@ -36,6 +36,20 @@ public class CloudWatchPolling {
 
     }
 
+    public GetLogEventsRequest createLogEvent( String logGroupName, String logStreamName, boolean fromStart){
+        GetLogEventsRequest logEventObject = GetLogEventsRequest.builder()
+                .logGroupName(logGroupName)
+                .logStreamName(logStreamName)
+                //.startTime()
+                //.endTime()
+                //.nextToken(nextToken)
+                //.limit(logLimit)
+                .startFromHead(fromStart)
+                .build();
+
+        return logEventObject;
+    }
+
 
 
 }
