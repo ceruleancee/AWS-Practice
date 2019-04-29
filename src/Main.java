@@ -15,6 +15,8 @@ public class Main {
 
         String logGroupName = "graylogs";
         String logStreamName = "graylog";
+        int logLimit;
+        int logIndex;
 
         // CONFIGURATION
         // Set credentials
@@ -23,7 +25,6 @@ public class Main {
         // Set Region
         Region region = Region.US_EAST_1;
 
-
         // CLOUDWATCH
         // Create a CloudwatchLog client
         CloudWatchLogsClient logsClient = CloudWatchLogsClient.builder()
@@ -31,18 +32,55 @@ public class Main {
                 .region(region)
                 .build();
 
-        // Pull log from the beginning from the designated logGroup and logStream
-        logsClient.getLogEvents(GetLogEventsRequest.builder()
-                                        .logGroupName(logGroupName)
-                                        .logStreamName(logStreamName)
-                                        .startFromHead(true)
-                                        .build());
+        // Create GetLogEventRequest object
+        GetLogEventsRequest logEventObject = GetLogEventsRequest.builder()
+                .logGroupName(logGroupName)
+                .logStreamName(logStreamName)
+                //.startTime()
+                //.endTime()
+                //.nextToken()
+                //.limit(logLimit)
+                .startFromHead(true)
+                .build();
 
-        // Print the log
-        System.out.println(logsClient.getLogEvents(GetLogEventsRequest.builder()
-                                                           .logGroupName(logGroupName)
-                                                           .logStreamName(logStreamName)
-                                                           .build()));
+
+        logLimit = logsClient.getLogEvents(logEventObject).events().size();
+
+        // Designate logEventObject from the START
+        logsClient.getLogEvents(logEventObject);
+        System.out.print("\n Pull log from the START, and print to console.\n\n");
+
+        // Print first and last log
+        System.out.print(logsClient.getLogEvents(logEventObject).events().get(0));
+        System.out.print(logsClient.getLogEvents(logEventObject).events().get(logLimit - 1));
+
+        // Iterate through all the events
+        for (int i = 0; i < logLimit; i++) {
+            System.out.print(logsClient.getLogEvents(logEventObject).events().get(i) + "\n");
+
+        }
+
+        // Get the total number of the current logEvents
+        logLimit = logsClient.getLogEvents(logEventObject).events().size();
+
+        // Set next token
+        String nextToken = logsClient.getLogEvents(logEventObject).nextForwardToken();
+
+        // Create new GetLogEventRequest object
+        GetLogEventsRequest logEventObject02 = GetLogEventsRequest.builder()
+                .logGroupName(logGroupName)
+                .logStreamName(logStreamName)
+                //.startTime()
+                //.endTime()
+                .nextToken(nextToken)
+                .limit(logLimit)
+                .startFromHead(false)
+                .build();
+
+//        // Designate logEventObject from LAST REQUEST
+        // TODO resolve why this isnt working
+        logsClient.getLogEvents(logEventObject02);
+
 
     }
 }
