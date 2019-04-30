@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsRequest;
 public class Main {
     public static void main(String[] args) {
 
-        String logGroupName= "";
+        String logGroupName = "";
         String logStreamName = "";
         int logLimit;
         int logGroupListSize;
@@ -38,7 +38,7 @@ public class Main {
         logGroupListSize = logsClient.describeLogGroups().logGroups().size();
 
         // List all the logGroupName(s) available
-        for (int i=0; i<logGroupListSize; i++) {
+        for (int i = 0; i < logGroupListSize; i++) {
 
             logGroupName = logsClient.describeLogGroups().logGroups().get(i).logGroupName();
             DescribeLogStreamsRequest logStreamsRequest = DescribeLogStreamsRequest.builder()
@@ -50,7 +50,7 @@ public class Main {
             System.out.print("Log Group Name: " + logGroupName + "\n");
 
             // List all logStream(s) available
-            for (int j=0; j<logStreamListSize; j++) {
+            for (int j = 0; j < logStreamListSize; j++) {
 
                 logStreamName = logsClient.describeLogStreams(((logStreamsRequest))).logStreams().get(j).logStreamName();
                 System.out.print("     Log Stream Name: " + logStreamName + "\n");
@@ -79,13 +79,9 @@ public class Main {
         logsClient.getLogEvents(logEventObject);
         System.out.print("\n Pull log from the START, and print to console.\n\n");
 
-//        // Print first and last log
-//        System.out.print( "1 " + logsClient.getLogEvents(logEventObject).events().get(0));
-//        System.out.print( logLimit + "2 " + logsClient.getLogEvents(logEventObject).events().get(logLimit-1));
-
-         //Iterate through all the events
+        //Iterate through all the events
         for (int i = 0; i < logLimit; i++) {
-            System.out.print( " ["+ i +"] "+logsClient.getLogEvents(logEventObject).events().get(i) + "\n");
+            System.out.print(" [" + i + "] " + logsClient.getLogEvents(logEventObject).events().get(i) + "\n");
         }
 
         // Get the total number of the current logEvents
