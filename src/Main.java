@@ -7,16 +7,18 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
+import software.amazon.awssdk.services.cloudwatchlogs.model.DescribeLogStreamsRequest;
 import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsRequest;
 
 
 public class Main {
     public static void main(String[] args) {
 
-        String logGroupName = "graylogs";
-        String logStreamName = "graylog";
+        String logGroupName= "";
+        String logStreamName = "";
         int logLimit;
-        int logIndex;
+        int logGroupListSize;
+        int logStreamListSize;
 
         // CONFIGURATION
         // Set credentials
@@ -32,10 +34,37 @@ public class Main {
                 .region(region)
                 .build();
 
+        // Number of logGroupNames that exist
+        logGroupListSize = logsClient.describeLogGroups().logGroups().size();
+
+        // List all the logGroupName(s) available
+        for (int i=0; i<logGroupListSize; i++) {
+
+            logGroupName = logsClient.describeLogGroups().logGroups().get(i).logGroupName();
+            DescribeLogStreamsRequest logStreamsRequest = DescribeLogStreamsRequest.builder()
+                    .logGroupName(logGroupName)
+                    .build();
+
+            // Number of logStreamNames that exist
+            logStreamListSize = logsClient.describeLogStreams(((logStreamsRequest))).logStreams().size();
+            System.out.print("Log Group Name: " + logGroupName + "\n");
+
+            // List all logStream(s) available
+            for (int j=0; j<logStreamListSize; j++) {
+
+                logStreamName = logsClient.describeLogStreams(((logStreamsRequest))).logStreams().get(j).logStreamName();
+                System.out.print("     Log Stream Name: " + logStreamName + "\n");
+            }
+        }
+
+        // Hardcoded variables for test purposes
+        logGroupName = "graylogs";
+        logStreamName = "graylog";
+
         // Create GetLogEventRequest object
         GetLogEventsRequest logEventObject = GetLogEventsRequest.builder()
                 .logGroupName(logGroupName)
-                .logStreamName(logStreamName)
+                .logStreamName(logStreamName) // logStreamName is required
                 //.startTime()
                 //.endTime()
                 //.nextToken()
@@ -50,14 +79,13 @@ public class Main {
         logsClient.getLogEvents(logEventObject);
         System.out.print("\n Pull log from the START, and print to console.\n\n");
 
-        // Print first and last log
-        System.out.print(logsClient.getLogEvents(logEventObject).events().get(0));
-        System.out.print(logsClient.getLogEvents(logEventObject).events().get(logLimit - 1));
+//        // Print first and last log
+//        System.out.print( "1 " + logsClient.getLogEvents(logEventObject).events().get(0));
+//        System.out.print( logLimit + "2 " + logsClient.getLogEvents(logEventObject).events().get(logLimit-1));
 
-        // Iterate through all the events
+         //Iterate through all the events
         for (int i = 0; i < logLimit; i++) {
-            System.out.print(logsClient.getLogEvents(logEventObject).events().get(i) + "\n");
-
+            System.out.print( " ["+ i +"] "+logsClient.getLogEvents(logEventObject).events().get(i) + "\n");
         }
 
         // Get the total number of the current logEvents
@@ -73,13 +101,13 @@ public class Main {
                 //.startTime()
                 //.endTime()
                 .nextToken(nextToken)
-                .limit(logLimit)
+                //.limit(logLimit)
                 .startFromHead(false)
                 .build();
 
-//        // Designate logEventObject from LAST REQUEST
-        // TODO resolve why this isnt working
-        logsClient.getLogEvents(logEventObject02);
+        // TODO resolve nextToken issue
+        // Designate logEventObject from LAST REQUEST
+        //logsClient.getLogEvents(logEventObject02);
 
 
     }
